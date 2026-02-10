@@ -1,0 +1,11 @@
+[
+  {
+    "id": "test-rule-1",
+    "trigger": "change",
+    "pattern": "*.txt",
+    "condition": {
+      "containsText": "ERROR"
+    },
+    "message": "Error detected in logs"
+  }
+]
