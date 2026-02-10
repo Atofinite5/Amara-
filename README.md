@@ -131,42 +131,6 @@ Amara supports hybrid execution:
 This allows multi-device usage and remote monitoring while preserving local functionality.
 
 
-System Architecture  
-                        |||||||||||||||||||||||||||||||||||||||
-                          ┌──────────────────────────────-┐
-                          │          User Input           │
-                          │ (Natural Language Rule Input) │
-                          └──────────────┬───────────────-┘
-                                         │
-                                         ▼
-                         ┌──────────────────────────────────┐
-                         │     Local LLM Rule Parser        │
-                         │ (Ollama: Llama3 / Qwen2.5)       │
-                         └──────────────┬───────────────────┘
-                                        │
-                                        ▼
-         ┌────────────────────────────────────────────────────────────────┐
-         │                                                                │
-         │                        Rule Engine                             │
-         │   (Pattern Matching, Condition Evaluation, Trigger Logic)      │
-         │                                                                │
-         └──────────────┬────────────────────────┬─────────────────────-──┘
-                        │                        │
-                        ▼                        ▼
-        ┌────────────────────-┐        ┌──────────────────────────┐
-        │ Notifications       │        │ Telemetry System         │
-        │ (System Alerts)     │        │ (Events, Errors, Stats)  │
-        └───────────────────-─┘        └──────────────────────────┘
-                        │                        │
-                        ▼                        ▼
-              ┌────────────────┐        ┌──────────────────-┐
-              │ Local Logs     │        │Cloud Sync (Opt)   │
-              │ events/matches │        │Supabase           │
-              └────────────────┘        └─────────────────-─┘
-
-
-
-
   Installation Guide
 
 1. Clone Repository : || git clone <your-repo-url> cd amara ||
