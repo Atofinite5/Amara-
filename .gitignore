@@ -32,3 +32,6 @@ coverage/
 .vscode/
 .idea/
 .trae/
+
+# Process ID files
+amara.pid
