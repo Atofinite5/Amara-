@@ -4,12 +4,10 @@ import { logger } from '../telemetry';
 export class TelemetrySyncService {
   async syncStats(stats: any) {
     try {
-      const { error } = await supabase
-        .from('telemetry')
-        .insert({
-          ...stats,
-          timestamp: new Date().toISOString()
-        });
+      const { error } = await supabase.from('telemetry').insert({
+        ...stats,
+        timestamp: new Date().toISOString(),
+      });
 
       if (error) throw error;
     } catch (error) {

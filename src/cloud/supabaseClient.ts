@@ -8,6 +8,6 @@ const supabaseKey = process.env.SUPABASE_KEY || 'public-anon-key';
 
 export const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
-    persistSession: false
-  }
+    persistSession: false,
+  },
 });

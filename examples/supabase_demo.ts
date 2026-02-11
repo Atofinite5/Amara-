@@ -17,7 +17,7 @@ const resolveDns = promisify(dns.resolve);
  * Exits if required variables are missing or invalid.
  */
 function validateConfig() {
-  const requiredVars = ['SUPABASE_URL', 'SUPABASE_KEY'];
+  const requiredVars = ['SUPABASE_URL', 'SUPABASE_ANON_KEY'];
   const missing = requiredVars.filter(v => !process.env[v]);
 
   if (missing.length > 0) {
@@ -100,9 +100,10 @@ async function runDemo() {
   }
   validateConfig();
 
+  // Use the explicitly requested SUPABASE_ANON_KEY, falling back to SUPABASE_KEY if needed for backward compat
   const config = {
     url: process.env.SUPABASE_URL!,
-    key: process.env.SUPABASE_KEY!,
+    key: process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY!,
   };
 
   // 2. Network Diagnostics
@@ -130,11 +131,6 @@ async function runDemo() {
     const email = 'demo@example.com';
     const password = 'securepassword123';
     
-    // We wrap SupabasePlugin methods which return { data, error } 
-    // If we wanted to retry them, we'd need to check .error or throw inside the wrapper.
-    // For this demo, let's treat auth failures as non-retriable usually, unless network related.
-    // But since our plugin catches errors and returns { error }, we'd need to inspect it.
-    
     const authResult = await supabase.signIn(email, password);
     if (authResult.error) {
       console.log(`ℹ️  Sign in result: ${authResult.error.message} (Expected if user doesn't exist)`);
@@ -155,14 +151,15 @@ async function runDemo() {
     // Retry insert
     const insertResult = await withRetry(async () => {
       const res = await supabase.insertData('events', newEvent);
-      // If we want to retry on database errors (like timeouts), we could throw here
-      // But usually application logic errors shouldn't be retried blindly.
-      // We'll trust the plugin's error return for now.
       return res;
     });
 
     if (insertResult.error) {
       console.log(`❌ Insert failed: ${insertResult.error.message}`);
+      if (insertResult.error.message.includes('Could not find the table')) {
+        console.log('\n💡 Tip: The "events" table does not exist in your Supabase project.');
+        console.log('   Please run the SQL in "supabase_schema.sql" in your Supabase Dashboard SQL Editor.');
+      }
     } else {
       console.log('✅ Record inserted:', insertResult.data);
     }
@@ -171,6 +168,10 @@ async function runDemo() {
     const fetchResult = await supabase.getData('events', '*', 5);
     if (fetchResult.error) {
       console.log(`❌ Fetch failed: ${fetchResult.error.message}`);
+      if (!insertResult.error && fetchResult.error.message.includes('Could not find the table')) { // Only show tip if we didn't show it above
+         console.log('\n💡 Tip: The "events" table does not exist.');
+         console.log('   Please run the SQL in "supabase_schema.sql" in your Supabase Dashboard SQL Editor.');
+      }
     } else {
       console.log(`✅ Fetched ${fetchResult.data?.length} records`);
     }

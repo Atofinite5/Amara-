@@ -25,6 +25,7 @@ export class Notifier {
   private rateLimitWindow = 1000; // 1 second
   private lastNotificationTime = 0;
   private webhookUrl: string | undefined = process.env.WEBHOOK_URL;
+  private intervalId: NodeJS.Timeout | null = null;
 
   constructor() {
     this.processQueue();
@@ -42,7 +43,7 @@ export class Notifier {
   }
 
   private async processQueue() {
-    setInterval(async () => {
+    this.intervalId = setInterval(async () => {
       if (this.queue.length === 0) return;
 
       const now = Date.now();
@@ -57,6 +58,13 @@ export class Notifier {
       await this.dispatch(item);
 
     }, 100); // Check every 100ms
+  }
+
+  stop() {
+    if (this.intervalId) {
+      clearInterval(this.intervalId);
+      this.intervalId = null;
+    }
   }
 
   private async dispatch(item: QueuedNotification) {

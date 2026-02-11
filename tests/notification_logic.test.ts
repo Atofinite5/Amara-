@@ -1,5 +1,5 @@
 import { RuleEngine, RulePredicate } from '../src/ruleEngine';
-import { Notifier, NotificationPayload } from '../src/notifier';
+import { Notifier, NotificationPayload, notifierService } from '../src/notifier';
 import { minimatch } from 'minimatch';
 
 // Mock dependencies
@@ -127,6 +127,7 @@ describe('Notification System Logic', () => {
 
     afterEach(() => {
       jest.useRealTimers();
+      notifier.stop();
     });
 
     it('should queue notifications and respect rate limit', async () => {
@@ -161,4 +162,8 @@ describe('Notification System Logic', () => {
       logSpy.mockRestore();
     });
   });
+});
+
+afterAll(() => {
+  notifierService.stop();
 });

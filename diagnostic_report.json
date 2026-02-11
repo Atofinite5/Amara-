@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-02-10T20:36:12.309Z",
+  "summary": {
+    "passed": 9,
+    "warnings": 0,
+    "failed": 1
+  },
+  "details": [
+    {
+      "category": "Config",
+      "status": "PASS",
+      "message": "Environment variable SUPABASE_URL is present",
+      "timestamp": "2026-02-10T20:36:10.142Z"
+    },
+    {
+      "category": "Config",
+      "status": "PASS",
+      "message": "Environment variable SUPABASE_ANON_KEY is present",
+      "timestamp": "2026-02-10T20:36:10.143Z"
+    },
+    {
+      "category": "Config",
+      "status": "PASS",
+      "message": "Environment variable SUPABASE_SERVICE_ROLE is present",
+      "timestamp": "2026-02-10T20:36:10.143Z"
+    },
+    {
+      "category": "Config",
+      "status": "PASS",
+      "message": "Environment variable JWT_SECRET is present",
+      "timestamp": "2026-02-10T20:36:10.143Z"
+    },
+    {
+      "category": "Config",
+      "status": "PASS",
+      "message": "Environment variable NODE_ENV is present",
+      "timestamp": "2026-02-10T20:36:10.143Z"
+    },
+    {
+      "category": "Security",
+      "status": "PASS",
+      "message": "JWT_SECRET length is sufficient",
+      "timestamp": "2026-02-10T20:36:10.143Z"
+    },
+    {
+      "category": "Database",
+      "status": "PASS",
+      "message": "Successfully connected and queried \"events\" table",
+      "timestamp": "2026-02-10T20:36:11.986Z"
+    },
+    {
+      "category": "Database",
+      "status": "FAIL",
+      "message": "Column \"details\" in \"events\" table access failed",
+      "details": {
+        "code": "42703",
+        "details": null,
+        "hint": null,
+        "message": "column events.details does not exist"
+      },
+      "timestamp": "2026-02-10T20:36:12.176Z"
+    },
+    {
+      "category": "Database",
+      "status": "PASS",
+      "message": "\"rules\" table is accessible",
+      "timestamp": "2026-02-10T20:36:12.308Z"
+    },
+    {
+      "category": "Cache",
+      "status": "PASS",
+      "message": "Using MOCK_REDIS (Redis connection check skipped)",
+      "timestamp": "2026-02-10T20:36:12.309Z"
+    }
+  ]
+}

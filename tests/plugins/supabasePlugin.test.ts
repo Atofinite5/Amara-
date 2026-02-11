@@ -1,5 +1,15 @@
 import { SupabasePlugin } from '../../src/plugins/supabasePlugin';
 
+// Define mock functions for the chain
+const mockLimit = jest.fn();
+const mockSingle = jest.fn();
+const mockSelect = jest.fn().mockReturnValue({ limit: mockLimit });
+const mockInsert = jest.fn().mockReturnValue({ select: jest.fn().mockReturnValue({ single: mockSingle }) });
+const mockFrom = jest.fn().mockReturnValue({
+  select: mockSelect,
+  insert: mockInsert
+});
+
 // Mock supabase-js
 jest.mock('@supabase/supabase-js', () => ({
   createClient: jest.fn(() => ({
@@ -9,12 +19,7 @@ jest.mock('@supabase/supabase-js', () => ({
       signUp: jest.fn(),
       signOut: jest.fn(),
     },
-    from: jest.fn(() => ({
-      select: jest.fn().mockReturnThis(),
-      insert: jest.fn().mockReturnThis(),
-      limit: jest.fn().mockReturnThis(),
-      single: jest.fn(),
-    })),
+    from: mockFrom,
     channel: jest.fn(() => ({
       on: jest.fn().mockReturnThis(),
       subscribe: jest.fn(),
@@ -34,8 +39,12 @@ describe('SupabasePlugin', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    // Reset chain mocks return values default
+    mockLimit.mockReturnThis();
+    mockSelect.mockReturnValue({ limit: mockLimit });
+    mockFrom.mockReturnValue({ select: mockSelect, insert: mockInsert });
+
     plugin = new SupabasePlugin(mockConfig);
-    // Access the private client for mocking return values
     mockClient = (plugin as any).client;
   });
 
@@ -82,9 +91,7 @@ describe('SupabasePlugin', () => {
   describe('Database Operations', () => {
     it('should get data successfully', async () => {
       const mockData = [{ id: 1, name: 'Test' }];
-      // Mock chain: from -> select -> limit -> resolved value
-      const mockFrom = mockClient.from();
-      mockFrom.limit.mockResolvedValue({ data: mockData, error: null });
+      mockLimit.mockResolvedValue({ data: mockData, error: null });
 
       const result = await plugin.getData('test_table');
       expect(result.data).toEqual(mockData);
@@ -92,8 +99,7 @@ describe('SupabasePlugin', () => {
 
     it('should handle fetch error', async () => {
       const error = new Error('DB Error');
-      const mockFrom = mockClient.from();
-      mockFrom.limit.mockResolvedValue({ data: null, error });
+      mockLimit.mockResolvedValue({ data: null, error });
 
       const result = await plugin.getData('test_table');
       expect(result.error).toBe(error);

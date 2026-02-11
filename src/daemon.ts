@@ -1,5 +1,4 @@
 import cluster from 'cluster';
-import os from 'os';
 import fs from 'fs';
 import path from 'path';
 import { logger } from './telemetry';
@@ -12,7 +11,6 @@ import { minimatch } from 'minimatch';
 import { redisClient } from './redisClient';
 import { ruleSync } from './cloud/ruleSync';
 import { eventSync } from './cloud/eventSync';
-import { telemetrySync } from './cloud/telemetrySync';
 
 const PID_FILE = path.join(process.cwd(), 'amara.pid');
 
@@ -65,7 +63,11 @@ if (cluster.isPrimary) {
         await redisClient.connect();
 
         // Sync rules from cloud
-        await ruleSync.pullRules();
+        try {
+          await ruleSync.pullRules();
+        } catch (error) {
+          logger.warn({ error }, 'Failed to sync rules from cloud, continuing without');
+        }
         ruleSync.startRealtimeSync();
 
         // Load rules

@@ -84,11 +84,8 @@ export class SupabasePlugin {
   // --- Database Operations ---
   async getData<T>(table: string, columns = '*', limit = 10): Promise<DbResult<T[]>> {
     try {
-      const { data, error } = await this.client
-        .from(table)
-        .select(columns)
-        .limit(limit);
-      
+      const { data, error } = await this.client.from(table).select(columns).limit(limit);
+
       if (error) throw error;
       return { data: data as T[], error: null };
     } catch (error: any) {
@@ -99,11 +96,7 @@ export class SupabasePlugin {
 
   async insertData<T>(table: string, record: Partial<T>): Promise<DbResult<T>> {
     try {
-      const { data, error } = await this.client
-        .from(table)
-        .insert(record)
-        .select()
-        .single();
+      const { data, error } = await this.client.from(table).insert(record).select().single();
 
       if (error) throw error;
       return { data: data as T, error: null };
@@ -149,7 +142,7 @@ export class SupabasePlugin {
 
   // --- Cleanup ---
   disconnect(): void {
-    this.channels.forEach(channel => channel.unsubscribe());
+    this.channels.forEach((channel) => channel.unsubscribe());
     this.channels.clear();
     logger.info('Supabase Plugin disconnected');
   }
