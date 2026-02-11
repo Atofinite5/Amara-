@@ -67,6 +67,60 @@ npm run dev
 
 ---
 
+## Usage
+
+### Starting Amara
+Start the daemon in the background:
+```bash
+npm start
+```
+This launches the file watcher and API server on `http://localhost:4289`.
+
+### Adding Rules
+Use natural language to define rules. Amara uses a local LLM to parse them into structured conditions.
+
+#### Via CLI
+```bash
+npx ts-node cli.ts add "notify me when .ts files change"
+npx ts-node cli.ts add "alert when urgent.txt is modified"
+npx ts-node cli.ts add "watch for new .log files in logs/"
+```
+
+#### Via API
+First, authenticate:
+```bash
+curl -X POST http://localhost:4289/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"username": "admin"}'
+```
+Use the returned `accessToken`:
+```bash
+curl -X POST http://localhost:4289/api/rules \
+  -H "Authorization: Bearer YOUR_TOKEN" \
+  -H "Content-Type: application/json" \
+  -d '{"rule": "notify me when .ts files change"}'
+```
+
+### API Endpoints
+- `GET /status` - Health check
+- `POST /auth/login` - Get access token
+- `GET /api/rules` - List rules
+- `POST /api/rules` - Add rule
+- `GET /api/events` - View recent events
+- `GET /api/logs` - View logs
+- `GET /api/telemetry` - System stats
+- `POST /api/analyze` - Analyze code file
+
+### Configuration
+Environment variables in `.env`:
+- `SUPABASE_URL` - Supabase project URL
+- `SUPABASE_KEY` - Supabase anon key
+- `REDIS_URL` - Redis connection (default: `redis://localhost:6379`)
+- `OLLAMA_HOST` - Ollama server URL (default: `http://localhost:11434`)
+- `OLLAMA_MODEL` - LLM model (default: `llama3`)
+- `JWT_ACCESS_SECRET` - JWT secret for access tokens
+- `JWT_REFRESH_SECRET` - JWT secret for refresh tokens
+
 ## Developer Guide & Demos
 
 ### Supabase Integration Demo
@@ -76,9 +130,19 @@ npx ts-node examples/supabase_demo.ts
 ```
 
 ### Testing
-Run the comprehensive test suite:
+Run the test suites:
 ```bash
+# Unit tests
 npm test
+
+# End-to-end tests
+npm run test:e2e
+
+# Linting
+npm run lint
+
+# Code formatting
+npm run format
 ```
 
 ---
